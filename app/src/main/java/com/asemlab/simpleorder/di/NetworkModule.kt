@@ -19,6 +19,7 @@ import io.ktor.serialization.gson.gson
 import org.koin.core.module.dsl.viewModel
 import org.koin.dsl.module
 import com.asemlab.simpleorder.BuildConfig
+import com.asemlab.simpleorder.database.ProductDao
 
 val networkModule = module {
     single<HttpClient> {
@@ -44,7 +45,7 @@ val networkModule = module {
     }
 
     single<ProductsRepository> {
-        ProductsRepository(get<ProductsService>())
+        ProductsRepository(get<ProductsService>(), get<ProductDao>())
     }
 
     viewModel { MainViewModel(get<ProductsRepository>()) }
