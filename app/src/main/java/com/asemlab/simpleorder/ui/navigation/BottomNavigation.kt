@@ -10,13 +10,16 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
 import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
+import com.asemlab.simpleorder.ui.MainViewModel
 import com.asemlab.simpleorder.ui.base.DefaultScreen
+import com.asemlab.simpleorder.ui.tables.TablesScreen
 import com.asemlab.simpleorder.ui.theme.navigationBarItemColors
 
 @Composable
@@ -43,9 +46,12 @@ fun MainBottomBar(navController: NavHostController) {
                 },
                 icon = {
 
-                    Icon(ImageVector.vectorResource(destination.icon), contentDescription = destination.contentDescription)
+                    Icon(
+                        ImageVector.vectorResource(destination.icon),
+                        contentDescription = destination.contentDescription
+                    )
                 },
-                label = { Text(destination.label) }, alwaysShowLabel = false,
+                label = { Text(stringResource(destination.label)) }, alwaysShowLabel = false,
                 colors = navigationBarItemColors
             )
         }
@@ -57,9 +63,9 @@ fun MainBottomBar(navController: NavHostController) {
 fun MainNavHost(
     navController: NavHostController,
     startDestination: Destination,
+    mainViewModel: MainViewModel,
     innerPadding: PaddingValues
 ) {
-
 
     NavHost(
         navController = navController,
@@ -69,23 +75,33 @@ fun MainNavHost(
         Destination.entries.forEach { entry ->
             composable(entry.route) {
                 when (entry) {
-                    Destination.TABLES -> DefaultScreen(
-                        title = entry.label,
-                        modifier = Modifier.padding(innerPadding)
-                    )
+                    Destination.TABLES -> {
+                        TablesScreen(
+                            mainViewModel = mainViewModel,
+                            modifier = Modifier.padding(bottom = innerPadding.calculateBottomPadding()),
+                            onSelectCategory = { categoryTabItem ->
+                                mainViewModel.filterProductsByCategory(categoryTabItem)
+                            },
+                            onSearch = { query ->
+
+                            },
+                            onProductClicked = {
+
+                            })
+                    }
 
                     Destination.ORDERS -> DefaultScreen(
-                        title = entry.label,
+                        title = stringResource(entry.label),
                         modifier = Modifier.padding(innerPadding)
                     )
 
                     Destination.MENU -> DefaultScreen(
-                        title = entry.label,
+                        title = stringResource(entry.label),
                         modifier = Modifier.padding(innerPadding)
                     )
 
                     Destination.SETTINGS -> DefaultScreen(
-                        title = entry.label,
+                        title = stringResource(entry.label),
                         modifier = Modifier.padding(innerPadding)
                     )
                 }

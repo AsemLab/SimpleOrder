@@ -13,8 +13,11 @@ import com.asemlab.simpleorder.ui.navigation.Destination
 import com.asemlab.simpleorder.ui.navigation.MainBottomBar
 import com.asemlab.simpleorder.ui.navigation.MainNavHost
 import com.asemlab.simpleorder.ui.theme.SimpleOrderTheme
+import org.koin.android.ext.android.inject
 
 class MainActivity : ComponentActivity() {
+
+    val mainViewModel by inject<MainViewModel>()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -23,7 +26,6 @@ class MainActivity : ComponentActivity() {
 
         enableEdgeToEdge()
         setContent {
-
             val navController = rememberNavController()
 
             SimpleOrderTheme {
@@ -33,7 +35,7 @@ class MainActivity : ComponentActivity() {
                     bottomBar = { MainBottomBar(navController) }
                 ) { innerPadding ->
 
-                    MainNavHost(navController, Destination.TABLES, innerPadding)
+                    MainNavHost(navController, Destination.TABLES, mainViewModel, innerPadding)
 
                 }
             }

@@ -1,34 +1,35 @@
 package com.asemlab.simpleorder.ui.navigation
 
 import androidx.annotation.DrawableRes
+import androidx.annotation.StringRes
 import com.asemlab.simpleorder.R
 
 enum class Destination(
-    val label: String,
+    @StringRes val label: Int,
     val route: String,
     @DrawableRes val icon: Int,
     val contentDescription: String
 ) {
     TABLES(
-        "Tables",
+        R.string.tables_title,
         "tables",
         R.drawable.ic_tables,
         "Tables bottom item"
     ),
     ORDERS(
-        "Orders",
+        R.string.orders_title,
         "orders",
         R.drawable.ic_orders,
         "Orders bottom item"
     ),
     MENU(
-        "Menu",
+        R.string.menu_title,
         "menu",
         R.drawable.ic_menu,
         "Menu bottom item"
     ),
     SETTINGS(
-        "Settings",
+        R.string.settings_title,
         "settings",
         R.drawable.ic_settings,
         "Settings bottom item"
