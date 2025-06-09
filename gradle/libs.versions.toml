@@ -13,6 +13,7 @@ ktor = "3.1.3"
 koin_version = "4.0.3"
 coil_version = "3.2.0"
 nav_version = "2.9.0"
+constraintlayout-compose = "1.1.1"
 
 
 [libraries]
@@ -42,7 +43,9 @@ koin-bom = { module = "io.insert-koin:koin-bom", version.ref = "koin_version" }
 koin-core = { module = "io.insert-koin:koin-core" }
 koin-compose-navigation = { module = "io.insert-koin:koin-androidx-compose-navigation" }
 coil-compose = { module = "io.coil-kt.coil3:coil-compose", version.ref = "coil_version" }
+coil-network = { module = "io.coil-kt.coil3:coil-network-ktor3", version.ref = "coil_version" }
 navigation-compose = { module = "androidx.navigation:navigation-compose", version.ref = "nav_version" }
+constraintlayout-compose = { group = "androidx.constraintlayout", name = "constraintlayout-compose", version.ref = "constraintlayout-compose" }
 
 
 [plugins]
