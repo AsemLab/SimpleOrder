@@ -205,7 +205,7 @@ private fun ProductsSearchBar(
                         color = Color.LightGray,
                         shape = RoundedCornerShape(size = 8.dp)
                     )
-                    .padding(horizontal = 8.dp),
+                    .padding(horizontal = 4.dp),
             )
 
         },
@@ -328,6 +328,15 @@ private fun CartButtonPreview() {
     SimpleOrderTheme {
         CartButton(CartState(15, 125.33)) {
 
+        }
+    }
+}
+
+@Composable
+@Preview(showBackground = true, uiMode = UI_MODE_NIGHT_NO, name = "Search bar Preview")
+private fun SearchBarPreview() {
+    SimpleOrderTheme {
+        ProductsSearchBar("") {
         }
     }
 }
