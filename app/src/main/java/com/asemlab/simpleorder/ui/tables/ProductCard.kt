@@ -52,7 +52,7 @@ fun ProductCardBox(
     BoxWithConstraints(
         modifier = Modifier
             .padding(16.dp)
-            .width(175.dp)
+            .width(200.dp)
             .wrapContentHeight()
     ) {
 
@@ -79,10 +79,10 @@ fun ProductCardBox(
                 AsyncImage(
                     model = product.image,
                     modifier = modifier
-                        .width(175.dp)
+                        .width(200.dp)
                         .height(150.dp)
                         .background(Color.LightGray),
-                    contentScale = ContentScale.FillBounds,
+                    contentScale = ContentScale.Crop,
                     contentDescription = ""
                 )
 
@@ -104,7 +104,8 @@ fun ProductCardBox(
                     Text(
                         text = "$${price}", maxLines = 1, overflow = TextOverflow.Ellipsis,
                         modifier = Modifier
-                            .align(Alignment.End),
+                            .align(Alignment.End)
+                            .padding(top = 4.dp),
                         style = Typography.bodyLarge
                     )
                 }

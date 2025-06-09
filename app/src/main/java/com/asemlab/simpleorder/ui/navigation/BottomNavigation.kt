@@ -78,16 +78,7 @@ fun MainNavHost(
                     Destination.TABLES -> {
                         TablesScreen(
                             mainViewModel = mainViewModel,
-                            modifier = Modifier.padding(bottom = innerPadding.calculateBottomPadding()),
-                            onSelectCategory = { categoryTabItem ->
-                                mainViewModel.filterProductsByCategory(categoryTabItem)
-                            },
-                            onSearch = { query ->
-                                mainViewModel.searchProducts(query)
-                            },
-                            onProductClicked = {
-
-                            })
+                            modifier = Modifier.padding(bottom = innerPadding.calculateBottomPadding()))
                     }
 
                     Destination.ORDERS -> DefaultScreen(

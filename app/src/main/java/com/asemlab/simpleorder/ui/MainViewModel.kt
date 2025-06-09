@@ -5,6 +5,7 @@ import androidx.lifecycle.viewModelScope
 import com.asemlab.simpleorder.models.onError
 import com.asemlab.simpleorder.models.onSuccess
 import com.asemlab.simpleorder.repositories.ProductsRepository
+import com.asemlab.simpleorder.ui.models.CartState
 import com.asemlab.simpleorder.ui.models.CategoryTabItem
 import com.asemlab.simpleorder.ui.models.ProductUI
 import com.asemlab.simpleorder.ui.models.TablesState
@@ -21,7 +22,7 @@ import kotlinx.coroutines.withContext
 class MainViewModel(private val repository: ProductsRepository) : ViewModel() {
 
 
-    val state = MutableStateFlow(TablesState())
+    val state = MutableStateFlow(TablesState(cartState = CartState()))
     private val products = MutableStateFlow(listOf<ProductUI>())
     private val categories = MutableStateFlow(listOf<CategoryTabItem>())
 
@@ -79,9 +80,8 @@ class MainViewModel(private val repository: ProductsRepository) : ViewModel() {
 
     fun filterProductsByCategory(category: CategoryTabItem) {
         viewModelScope.launch {
-            isLoading()
-
             withContext(Dispatchers.IO) {
+                isLoading()
                 state.update { state1 ->
                     state1.copy(
                         categories = categories.value,
@@ -98,19 +98,70 @@ class MainViewModel(private val repository: ProductsRepository) : ViewModel() {
     }
 
     fun searchProducts(query: String) {
-        viewModelScope.launch {
-            withContext(Dispatchers.IO) {
+        state.update {
+            val filtered = products.value.filter { product ->
+                product.name?.contains(
+                    query,
+                    true
+                ) == true && product.category?.id?.toInt() == it.selectedCategory?.id
 
-                state.update {
-                    val filtered = products.value.filter { product ->
-                        product.name?.contains(
-                            query,
-                            true
-                        ) == true && product.category?.id?.toInt() == it.selectedCategory?.id
-                    }
-                    it.copy(products = filtered, searchQuery = query, isLoading = false)
-                }
             }
+            it.copy(products = filtered, searchQuery = query, isLoading = false)
+        }
+    }
+
+    fun updateCart(productUI: ProductUI) {
+        state.update {
+
+            var updatedProducts = products.value.toMutableList()
+
+            updatedProducts.forEachIndexed { index, product ->
+                if (product.id == productUI.id)
+                    updatedProducts[index] = product.copy(count = product.count + 1)
+            }
+
+            products.update { updatedProducts }
+
+            updatedProducts = updatedProducts.filter { product ->
+                product.name?.contains(
+                    it.searchQuery,
+                    true
+                ) == true && product.category?.id?.toInt() == it.selectedCategory?.id
+
+            }.toMutableList()
+
+
+            val updatedCartState = CartState(
+                it.cartState.numOfItems + 1,
+                (it.cartState.totalAmount + productUI.price!!)
+            )
+
+            it.copy(cartState = updatedCartState, products = updatedProducts)
+
+        }
+    }
+
+
+    fun clearCart() {
+        state.update {
+
+            var updatedProducts = products.value.toMutableList()
+
+            updatedProducts.forEachIndexed { index, product ->
+                updatedProducts[index] = product.copy(count = 0)
+            }
+
+            products.update { updatedProducts }
+
+            updatedProducts = updatedProducts.filter { product ->
+                product.name?.contains(
+                    it.searchQuery,
+                    true
+                ) == true && product.category?.id?.toInt() == it.selectedCategory?.id
+
+            }.toMutableList()
+
+            it.copy(cartState = CartState(), products = updatedProducts)
         }
     }
 
