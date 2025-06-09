@@ -83,7 +83,7 @@ fun MainNavHost(
                                 mainViewModel.filterProductsByCategory(categoryTabItem)
                             },
                             onSearch = { query ->
-
+                                mainViewModel.searchProducts(query)
                             },
                             onProductClicked = {
 
