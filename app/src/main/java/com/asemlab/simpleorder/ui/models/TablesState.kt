@@ -6,5 +6,6 @@ data class TablesState(
     val errorMessage: String = "",
     var isLoading: Boolean = false,
     var selectedCategory: CategoryTabItem? = null,
-    var searchQuery: String = ""
+    var searchQuery: String = "",
+    val cartState: CartState
 )

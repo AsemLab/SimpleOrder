@@ -7,6 +7,7 @@ import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Surface
 import androidx.compose.ui.Modifier
 import androidx.navigation.compose.rememberNavController
 import com.asemlab.simpleorder.ui.navigation.Destination
@@ -29,14 +30,16 @@ class MainActivity : ComponentActivity() {
             val navController = rememberNavController()
 
             SimpleOrderTheme {
-                Scaffold(
-                    modifier = Modifier.fillMaxSize(),
-                    /*.padding(top = 32.dp)*/
-                    bottomBar = { MainBottomBar(navController) }
-                ) { innerPadding ->
+                Surface {
+                    Scaffold(
+                        modifier = Modifier.fillMaxSize(),
+                        /*.padding(top = 32.dp)*/
+                        bottomBar = { MainBottomBar(navController) }
+                    ) { innerPadding ->
 
-                    MainNavHost(navController, Destination.TABLES, mainViewModel, innerPadding)
+                        MainNavHost(navController, Destination.TABLES, mainViewModel, innerPadding)
 
+                    }
                 }
             }
         }

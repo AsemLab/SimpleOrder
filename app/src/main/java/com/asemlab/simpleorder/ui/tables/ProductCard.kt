@@ -22,15 +22,17 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.layout.layoutId
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.constraintlayout.compose.ConstraintSet
 import coil3.compose.AsyncImage
 import com.asemlab.simpleorder.ui.models.ProductUI
+import com.asemlab.simpleorder.ui.theme.OrderBody
+import com.asemlab.simpleorder.ui.theme.OrderTitleBold
 import com.asemlab.simpleorder.ui.theme.SimpleOrderTheme
 import com.asemlab.simpleorder.ui.theme.Typography
 
@@ -52,7 +54,7 @@ fun ProductCardBox(
     BoxWithConstraints(
         modifier = Modifier
             .padding(16.dp)
-            .width(175.dp)
+            .width(200.dp)
             .wrapContentHeight()
     ) {
 
@@ -79,10 +81,10 @@ fun ProductCardBox(
                 AsyncImage(
                     model = product.image,
                     modifier = modifier
-                        .width(175.dp)
+                        .width(200.dp)
                         .height(150.dp)
                         .background(Color.LightGray),
-                    contentScale = ContentScale.FillBounds,
+                    contentScale = ContentScale.Crop,
                     contentDescription = ""
                 )
 
@@ -96,32 +98,34 @@ fun ProductCardBox(
                         text = product.name!!,
                         modifier = Modifier
                             .fillMaxWidth(),
-                        minLines = 1,
+                        minLines = 2,
                         maxLines = 2,
                         overflow = TextOverflow.Ellipsis,
-                        style = Typography.titleMedium
+                        style = OrderTitleBold,
                     )
                     Text(
-                        text = "$${price}", maxLines = 1, overflow = TextOverflow.Ellipsis,
+                        text = "JOD ${price}", maxLines = 1, overflow = TextOverflow.Ellipsis,
                         modifier = Modifier
-                            .align(Alignment.End),
-                        style = Typography.bodyLarge
+                            .align(Alignment.End)
+                            .padding(top = 4.dp),
+                        style = OrderBody
                     )
                 }
             }
 
             if (product.count > 0) {
                 Text(
-                    "${product.count}", fontSize = 14.sp,
+                    "${product.count}",
+                    style = OrderBody,
                     textAlign = TextAlign.Center,
                     color = Color.White,
-                    modifier = modifier
+                    modifier = Modifier
                         .background(
                             color = Color.Red,
                             shape = RoundedCornerShape(16.dp)
                         )
                         .size(32.dp)
-                        .padding(vertical = 4.dp)
+                        .padding(vertical = 8.dp)
                         .layoutId(countId)
                 )
             }

@@ -49,6 +49,14 @@ class ProductsRepository(
         productDao.addProducts(list)
     }
 
+    suspend fun clearCategories() {
+        productDao.clearCategories()
+    }
+
+    suspend fun clearProducts() {
+        productDao.clearProducts()
+    }
+
     suspend fun getProductsByCategory(category: Category): List<Product> {
         return productDao.getProductsByCategory(category)
     }

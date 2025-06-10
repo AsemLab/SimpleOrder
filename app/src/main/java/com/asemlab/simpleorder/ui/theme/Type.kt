@@ -32,3 +32,21 @@ val Typography = Typography(
     )
     */
 )
+
+val OrderTitleBold = TextStyle(
+    fontFamily = FontFamily.Default,
+    fontWeight = FontWeight.Bold,
+    fontSize = 14.sp,
+)
+
+val OrderTitleNormal = TextStyle(
+    fontFamily = FontFamily.Default,
+    fontWeight = FontWeight.Normal,
+    fontSize = 14.sp,
+)
+
+val OrderBody = TextStyle(
+    fontFamily = FontFamily.Default,
+    fontWeight = FontWeight.Normal,
+    fontSize = 14.sp,
+)

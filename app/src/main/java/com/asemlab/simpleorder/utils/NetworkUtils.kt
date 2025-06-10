@@ -13,9 +13,7 @@ suspend inline fun <reified T> performRequest(request: () -> HttpResponse): Serv
         if (response.status.value in 200..299)
             ServerResponse.Success(response.body<T>())
         else
-            ServerResponse.Error(
-                response.status.description, response.status.value
-            )
+            ServerResponse.Error(response.status.description, response.status.value)
 
     } catch (e: Exception) {
 
