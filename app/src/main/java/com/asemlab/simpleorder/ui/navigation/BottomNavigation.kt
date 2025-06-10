@@ -20,7 +20,6 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 import com.asemlab.simpleorder.ui.MainViewModel
 import com.asemlab.simpleorder.ui.base.DefaultScreen
 import com.asemlab.simpleorder.ui.tables.TablesScreen
-import com.asemlab.simpleorder.ui.theme.navigationBarItemColors
 
 @Composable
 fun MainBottomBar(navController: NavHostController) {
@@ -51,8 +50,7 @@ fun MainBottomBar(navController: NavHostController) {
                         contentDescription = destination.contentDescription
                     )
                 },
-                label = { Text(stringResource(destination.label)) }, alwaysShowLabel = false,
-                colors = navigationBarItemColors
+                label = { Text(stringResource(destination.label)) }, alwaysShowLabel = false
             )
         }
     }
@@ -78,7 +76,8 @@ fun MainNavHost(
                     Destination.TABLES -> {
                         TablesScreen(
                             mainViewModel = mainViewModel,
-                            modifier = Modifier.padding(bottom = innerPadding.calculateBottomPadding()))
+                            modifier = Modifier.padding(bottom = innerPadding.calculateBottomPadding())
+                        )
                     }
 
                     Destination.ORDERS -> DefaultScreen(

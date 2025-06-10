@@ -3,6 +3,7 @@ package com.asemlab.simpleorder.ui.tables
 
 import android.annotation.SuppressLint
 import android.content.res.Configuration.UI_MODE_NIGHT_NO
+import android.content.res.Configuration.UI_MODE_NIGHT_YES
 import androidx.annotation.DrawableRes
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -32,6 +33,7 @@ import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.PrimaryScrollableTabRow
 import androidx.compose.material3.SearchBar
 import androidx.compose.material3.SearchBarDefaults
@@ -46,11 +48,9 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.imageResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
@@ -161,9 +161,13 @@ private fun NoProducts(message: String, @DrawableRes imageId: Int, modifier: Mod
             modifier = Modifier
                 .height(250.dp),
             contentScale = ContentScale.FillHeight,
-            contentDescription = ""
+            contentDescription = "",
+            colorFilter = ColorFilter.tint(MaterialTheme.colorScheme.onSecondaryContainer)
         )
-        Text(message)
+        Text(
+            text = message,
+            color = MaterialTheme.colorScheme.onPrimaryContainer
+        )
     }
 }
 
@@ -205,7 +209,7 @@ private fun ProductsSearchBar(
                 modifier = Modifier
                     .border(
                         width = 1.dp,
-                        color = Color.LightGray,
+                        color = MaterialTheme.colorScheme.outlineVariant,
                         shape = RoundedCornerShape(size = 8.dp)
                     )
                     .padding(horizontal = 4.dp),
@@ -269,7 +273,7 @@ fun CartButton(cart: CartState, modifier: Modifier = Modifier, onClick: () -> Un
             .padding(horizontal = 8.dp)
             .padding(bottom = 8.dp)
             .background(
-                color = colorResource(R.color.teal_700),
+                color = MaterialTheme.colorScheme.onPrimaryContainer,
                 shape = RoundedCornerShape(8.dp)
             )
             .clickable { onClick() }
@@ -280,26 +284,27 @@ fun CartButton(cart: CartState, modifier: Modifier = Modifier, onClick: () -> Un
             textAlign = TextAlign.Center,
             modifier = modifier
                 .background(
-                    color = Color.White,
+                    color = MaterialTheme.colorScheme.onPrimary,
                     shape = CircleShape
                 )
                 .fillMaxWidth()
                 .padding(8.dp)
-                .weight(.1f, true)
+                .weight(.1f, true),
+            color = MaterialTheme.colorScheme.onPrimaryContainer
 
         )
         Text(
             stringResource(R.string.view_order), fontSize = 14.sp,
             textAlign = TextAlign.Start,
-            color = Color.White,
+            color = MaterialTheme.colorScheme.onPrimary,
             modifier = modifier
                 .padding(8.dp)
-                .weight(.5f)
+                .weight(.5f),
         )
         Text(
             format, fontSize = 14.sp,
             textAlign = TextAlign.End,
-            color = Color.White,
+            color = MaterialTheme.colorScheme.onPrimary,
             modifier = modifier
                 .padding(8.dp)
                 .weight(.2f)
@@ -309,7 +314,7 @@ fun CartButton(cart: CartState, modifier: Modifier = Modifier, onClick: () -> Un
             Icons.AutoMirrored.Filled.ArrowForward,
             modifier = modifier
                 .weight(.1f),
-            tint = Color.White,
+            tint = MaterialTheme.colorScheme.onPrimary,
             contentDescription = " "
         )
     }
@@ -330,6 +335,15 @@ private fun CartButtonPreview() {
     SimpleOrderTheme {
         CartButton(CartState(15, 125.33, emptyList())) {
 
+        }
+    }
+}
+
+@Composable
+@Preview(showBackground = true, uiMode = UI_MODE_NIGHT_YES, name = "Cart button Dark Preview")
+private fun CartButtonDarkPreview() {
+    SimpleOrderTheme {
+        CartButton(CartState(15, 125.33, emptyList())) {
         }
     }
 }
