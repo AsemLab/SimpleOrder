@@ -116,7 +116,7 @@ fun ProductCardBox(
                     "${product.count}", fontSize = 14.sp,
                     textAlign = TextAlign.Center,
                     color = Color.White,
-                    modifier = modifier
+                    modifier = Modifier
                         .background(
                             color = Color.Red,
                             shape = RoundedCornerShape(16.dp)

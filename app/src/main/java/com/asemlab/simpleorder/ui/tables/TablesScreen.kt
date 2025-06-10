@@ -151,16 +151,19 @@ fun TablesScreen(
 
 @Composable
 private fun NoProducts(message: String, @DrawableRes imageId: Int, modifier: Modifier = Modifier) {
-    Column(modifier = modifier.fillMaxSize(), Arrangement.Center) {
+    Column(
+        modifier = modifier.fillMaxSize(),
+        Arrangement.Center,
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
         Image(
             ImageBitmap.imageResource(imageId),
             modifier = Modifier
-                .height(250.dp)
-                .align(Alignment.CenterHorizontally),
+                .height(250.dp),
             contentScale = ContentScale.FillHeight,
             contentDescription = ""
         )
-        Text(message, modifier = Modifier.align(Alignment.CenterHorizontally))
+        Text(message)
     }
 }
 
@@ -227,7 +230,6 @@ fun CategoriesTab(
 
     val scrollState = rememberScrollState()
     var selected by rememberSaveable { mutableIntStateOf(selectedTab) }
-    val context = LocalContext.current
 
     PrimaryScrollableTabRow(
         scrollState = scrollState,
