@@ -14,6 +14,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -35,6 +36,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.PrimaryScrollableTabRow
+import androidx.compose.material3.ProvideTextStyle
 import androidx.compose.material3.SearchBar
 import androidx.compose.material3.SearchBarDefaults
 import androidx.compose.material3.Tab
@@ -53,17 +55,19 @@ import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.imageResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.asemlab.simpleorder.R
 import com.asemlab.simpleorder.ui.MainViewModel
 import com.asemlab.simpleorder.ui.base.LoadingIndicator
 import com.asemlab.simpleorder.ui.models.CartState
 import com.asemlab.simpleorder.ui.models.CategoryTabItem
+import com.asemlab.simpleorder.ui.theme.OrderTitleBold
+import com.asemlab.simpleorder.ui.theme.OrderTitleNormal
 import com.asemlab.simpleorder.ui.theme.SimpleOrderTheme
 import kotlinx.coroutines.launch
 
@@ -178,49 +182,56 @@ private fun ProductsSearchBar(
     onSearch: (String) -> Unit
 ) {
     var text by rememberSaveable { mutableStateOf(query) }
-
-    SearchBar(
-        inputField = {
-            SearchBarDefaults.InputField(
-                query = text,
-                onQueryChange = {
-                    text = it
-                    onSearch(text)
-                },
-                expanded = false,
-                onExpandedChange = {},
-                placeholder = { Text(stringResource(R.string.search_hint)) },
-                leadingIcon = {
-                    IconButton(onClick = { onSearch(text) }) {
-                        Icon(Icons.Default.Search, contentDescription = null)
-                    }
-                },
-                trailingIcon = {
-                    IconButton(onClick = {
-                        text = ""
+    ProvideTextStyle(value = OrderTitleNormal) {
+        SearchBar(
+            inputField = {
+                SearchBarDefaults.InputField(
+                    query = text,
+                    onQueryChange = {
+                        text = it
                         onSearch(text)
-                    }) {
-                        Icon(Icons.Default.Close, contentDescription = null)
-                    }
-                },
-                onSearch = {
-                    onSearch(text)
-                },
-                modifier = Modifier
-                    .border(
-                        width = 1.dp,
-                        color = MaterialTheme.colorScheme.outlineVariant,
-                        shape = RoundedCornerShape(size = 8.dp)
-                    )
-                    .padding(horizontal = 4.dp),
-            )
+                    },
+                    expanded = false,
+                    onExpandedChange = {},
+                    placeholder = {
+                        Text(
+                            stringResource(R.string.search_hint),
+                            style = OrderTitleNormal
+                        )
+                    },
+                    leadingIcon = {
+                        IconButton(onClick = { onSearch(text) }) {
+                            Icon(Icons.Default.Search, contentDescription = null)
+                        }
+                    },
+                    trailingIcon = {
+                        IconButton(onClick = {
+                            text = ""
+                            onSearch(text)
+                        }) {
+                            Icon(Icons.Default.Close, contentDescription = null)
+                        }
+                    },
+                    onSearch = {
+                        onSearch(text)
+                    },
+                    modifier = Modifier
+                        .border(
+                            width = 1.dp,
+                            color = MaterialTheme.colorScheme.outlineVariant,
+                            shape = RoundedCornerShape(size = 8.dp)
+                        )
+                        .padding(horizontal = 4.dp).height(56.dp)
+                )
 
-        },
-        modifier = Modifier.padding(vertical = 8.dp),
-        shape = RoundedCornerShape(size = 8.dp),
-        expanded = false,
-        onExpandedChange = { }) {
+            },
 
+            modifier = Modifier.padding(vertical = 4.dp),
+            shape = RoundedCornerShape(size = 8.dp),
+            expanded = false,
+            onExpandedChange = { }) {
+
+        }
     }
 }
 
@@ -263,7 +274,7 @@ fun CategoriesTab(
 @Composable
 fun CartButton(cart: CartState, modifier: Modifier = Modifier, onClick: () -> Unit) {
 
-    val format = String.format("%.2f", cart.totalAmount)
+    val format = String.format("JOD %.2f", cart.totalAmount)
 
     Row(
         verticalAlignment = Alignment.CenterVertically,
@@ -280,34 +291,38 @@ fun CartButton(cart: CartState, modifier: Modifier = Modifier, onClick: () -> Un
     ) {
         Spacer(modifier = modifier.width(16.dp))
         Text(
-            "${cart.numOfItems}", fontSize = 14.sp,
+            "${cart.numOfItems}",
+            style = OrderTitleBold,
             textAlign = TextAlign.Center,
-            modifier = modifier
+            modifier = Modifier
                 .background(
                     color = MaterialTheme.colorScheme.onPrimary,
                     shape = CircleShape
                 )
                 .fillMaxWidth()
-                .padding(8.dp)
+                .padding(horizontal = 4.dp, vertical = 12.dp)
                 .weight(.1f, true),
             color = MaterialTheme.colorScheme.onPrimaryContainer
 
         )
+        TextStyle()
         Text(
-            stringResource(R.string.view_order), fontSize = 14.sp,
+            stringResource(R.string.view_order),
+            style = OrderTitleBold,
             textAlign = TextAlign.Start,
             color = MaterialTheme.colorScheme.onPrimary,
             modifier = modifier
                 .padding(8.dp)
-                .weight(.5f),
+                .weight(.4f),
         )
         Text(
-            format, fontSize = 14.sp,
+            format,
+            style = OrderTitleBold,
             textAlign = TextAlign.End,
             color = MaterialTheme.colorScheme.onPrimary,
             modifier = modifier
                 .padding(8.dp)
-                .weight(.2f)
+                .weight(.3f)
 
         )
         Icon(
