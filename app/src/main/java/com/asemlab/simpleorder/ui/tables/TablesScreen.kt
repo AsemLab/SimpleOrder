@@ -226,7 +226,7 @@ private fun ProductsSearchBar(
 
             },
 
-            modifier = Modifier.padding(vertical = 4.dp),
+            modifier = Modifier.padding(8.dp).fillMaxWidth(),
             shape = RoundedCornerShape(size = 8.dp),
             expanded = false,
             onExpandedChange = { }) {
