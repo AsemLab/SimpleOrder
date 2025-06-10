@@ -326,7 +326,7 @@ private fun NoProductsPreview() {
 @Preview(showBackground = true, uiMode = UI_MODE_NIGHT_NO, name = "Cart button Preview")
 private fun CartButtonPreview() {
     SimpleOrderTheme {
-        CartButton(CartState(15, 125.33)) {
+        CartButton(CartState(15, 125.33, emptyList())) {
 
         }
     }

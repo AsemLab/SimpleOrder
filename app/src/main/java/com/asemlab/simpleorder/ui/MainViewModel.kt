@@ -22,7 +22,7 @@ import kotlinx.coroutines.withContext
 class MainViewModel(private val repository: ProductsRepository) : ViewModel() {
 
 
-    val state = MutableStateFlow(TablesState(cartState = CartState()))
+    val state = MutableStateFlow(TablesState(cartState = CartState(items = emptyList())))
     private val products = MutableStateFlow(listOf<ProductUI>())
     private val categories = MutableStateFlow(listOf<CategoryTabItem>())
 
@@ -113,6 +113,7 @@ class MainViewModel(private val repository: ProductsRepository) : ViewModel() {
     fun updateCart(productUI: ProductUI) {
         state.update {
 
+            // Update the list that stores all the products
             var updatedProducts = products.value.toMutableList()
 
             updatedProducts.forEachIndexed { index, product ->
@@ -122,6 +123,7 @@ class MainViewModel(private val repository: ProductsRepository) : ViewModel() {
 
             products.update { updatedProducts }
 
+            // Filter products by selected category
             updatedProducts = updatedProducts.filter { product ->
                 product.name?.contains(
                     it.searchQuery,
@@ -131,9 +133,23 @@ class MainViewModel(private val repository: ProductsRepository) : ViewModel() {
             }.toMutableList()
 
 
+            // Search for the item in CartState object
+            val index = it.cartState.items.indexOfFirst { p ->
+                p.id == productUI.id
+            }
+            val updatedCartItems = it.cartState.items.toMutableList()
+
+            if (index == -1) {
+                updatedCartItems.add(productUI.copy(count = 1))
+            }else{
+                updatedCartItems[index] = productUI.copy(count = productUI.count + 1)
+            }
+
+            // Create new CartState object to trigger the Flow to update the UI
             val updatedCartState = CartState(
                 it.cartState.numOfItems + 1,
-                (it.cartState.totalAmount + productUI.price!!)
+                (it.cartState.totalAmount + productUI.price!!),
+                updatedCartItems
             )
 
             it.copy(cartState = updatedCartState, products = updatedProducts)
@@ -161,7 +177,7 @@ class MainViewModel(private val repository: ProductsRepository) : ViewModel() {
 
             }.toMutableList()
 
-            it.copy(cartState = CartState(), products = updatedProducts)
+            it.copy(cartState = CartState(items = emptyList()), products = updatedProducts)
         }
     }
 
