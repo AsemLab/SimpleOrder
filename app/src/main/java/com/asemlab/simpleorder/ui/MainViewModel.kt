@@ -98,15 +98,20 @@ class MainViewModel(private val repository: ProductsRepository) : ViewModel() {
     }
 
     fun searchProducts(query: String) {
-        state.update {
-            val filtered = products.value.filter { product ->
-                product.name?.contains(
-                    query,
-                    true
-                ) == true && product.category?.id?.toInt() == it.selectedCategory?.id
+        viewModelScope.launch {
+            withContext(Dispatchers.IO) {
+                isLoading(200)
+                state.update {
+                    val filtered = products.value.filter { product ->
+                        product.name?.contains(
+                            query,
+                            true
+                        ) == true && product.category?.id?.toInt() == it.selectedCategory?.id
 
+                    }
+                    it.copy(products = filtered, searchQuery = query, isLoading = false)
+                }
             }
-            it.copy(products = filtered, searchQuery = query, isLoading = false)
         }
     }
 
@@ -141,7 +146,7 @@ class MainViewModel(private val repository: ProductsRepository) : ViewModel() {
 
             if (index == -1) {
                 updatedCartItems.add(productUI.copy(count = 1))
-            }else{
+            } else {
                 updatedCartItems[index] = productUI.copy(count = productUI.count + 1)
             }
 
@@ -181,11 +186,11 @@ class MainViewModel(private val repository: ProductsRepository) : ViewModel() {
         }
     }
 
-    private suspend fun isLoading() {
+    private suspend fun isLoading(duration: Long = 500) {
         state.update {
             it.copy(isLoading = true)
         }
-        delay(1000)
+        delay(duration)
     }
 
 }
