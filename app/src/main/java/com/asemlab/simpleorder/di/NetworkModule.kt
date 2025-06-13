@@ -4,7 +4,7 @@ package com.asemlab.simpleorder.di
 import com.asemlab.simpleorder.remote.ProductsService
 import com.asemlab.simpleorder.remote.ProductsServiceImp
 import com.asemlab.simpleorder.remote.Routes
-import com.asemlab.simpleorder.repositories.ProductsRepository
+import com.asemlab.simpleorder.repositories.ProductsRepositoryImp
 import com.asemlab.simpleorder.ui.MainViewModel
 import io.ktor.client.HttpClient
 import io.ktor.client.engine.android.Android
@@ -44,10 +44,10 @@ val networkModule = module {
         ProductsServiceImp(get<HttpClient>())
     }
 
-    single<ProductsRepository> {
-        ProductsRepository(get<ProductsService>(), get<ProductDao>())
+    single<ProductsRepositoryImp> {
+        ProductsRepositoryImp(get<ProductsService>(), get<ProductDao>())
     }
 
-    viewModel { MainViewModel(get<ProductsRepository>()) }
+    viewModel { MainViewModel(get<ProductsRepositoryImp>()) }
 
 }
