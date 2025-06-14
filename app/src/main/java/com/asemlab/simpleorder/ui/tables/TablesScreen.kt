@@ -14,7 +14,6 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -62,7 +61,6 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.asemlab.simpleorder.R
-import com.asemlab.simpleorder.ui.MainViewModel
 import com.asemlab.simpleorder.ui.base.LoadingIndicator
 import com.asemlab.simpleorder.ui.models.CartState
 import com.asemlab.simpleorder.ui.models.CategoryTabItem
@@ -70,18 +68,19 @@ import com.asemlab.simpleorder.ui.theme.OrderTitleBold
 import com.asemlab.simpleorder.ui.theme.OrderTitleNormal
 import com.asemlab.simpleorder.ui.theme.SimpleOrderTheme
 import kotlinx.coroutines.launch
+import org.koin.androidx.compose.koinViewModel
 
 
 @SuppressLint("FlowOperatorInvokedInComposition")
 @Composable
 fun TablesScreen(
-    mainViewModel: MainViewModel,
+    tablesViewModel: TablesViewModel = koinViewModel(),
     modifier: Modifier,
 ) {
     val scrollState = rememberLazyGridState()
     val coroutineScope = rememberCoroutineScope()
 
-    val state = mainViewModel.state.collectAsStateWithLifecycle()
+    val state = tablesViewModel.state.collectAsStateWithLifecycle()
 
     SimpleOrderTheme {
         if (state.value.errorMessage.isNotEmpty()) {
@@ -97,7 +96,7 @@ fun TablesScreen(
 
                 if (state.value.categories.isNotEmpty()) {
                     ProductsSearchBar(state.value.searchQuery) {
-                        mainViewModel.searchProducts(it)
+                        tablesViewModel.searchProducts(it)
                         coroutineScope.launch {
                             scrollState.animateScrollToItem(0)
                         }
@@ -106,7 +105,7 @@ fun TablesScreen(
                         state.value.categories,
                         (state.value.selectedCategory?.id?.minus(1)) ?: 0
                     ) {
-                        mainViewModel.filterProductsByCategory(it)
+                        tablesViewModel.filterProductsByCategory(it)
                         coroutineScope.launch {
                             scrollState.scrollToItem(0)
                         }
@@ -128,14 +127,14 @@ fun TablesScreen(
                             ) {
                                 items(state.value.products) { product ->
                                     ProductCardBox(product) {
-                                        mainViewModel.updateCart(product)
+                                        tablesViewModel.updateCart(product)
                                     }
                                 }
                             }
 
                             if (state.value.cartState.numOfItems > 0) {
                                 CartButton(state.value.cartState) {
-                                    mainViewModel.clearCart()
+                                    tablesViewModel.clearCart()
                                 }
                             }
                         }

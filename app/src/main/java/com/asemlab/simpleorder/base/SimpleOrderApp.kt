@@ -2,6 +2,7 @@ package com.asemlab.simpleorder.base
 
 
 import android.app.Application
+import com.asemlab.simpleorder.di.appModule
 import com.asemlab.simpleorder.di.databaseModule
 import com.asemlab.simpleorder.di.networkModule
 import org.koin.android.ext.koin.androidContext
@@ -16,7 +17,7 @@ class SimpleOrderApp : Application() {
         startKoin {
             androidLogger()
             androidContext(this@SimpleOrderApp)
-            modules(networkModule, databaseModule)
+            modules(appModule, networkModule, databaseModule)
         }
     }
 }

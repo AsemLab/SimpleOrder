@@ -17,7 +17,6 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
-import com.asemlab.simpleorder.ui.MainViewModel
 import com.asemlab.simpleorder.ui.base.DefaultScreen
 import com.asemlab.simpleorder.ui.tables.TablesScreen
 
@@ -61,7 +60,6 @@ fun MainBottomBar(navController: NavHostController) {
 fun MainNavHost(
     navController: NavHostController,
     startDestination: Destination,
-    mainViewModel: MainViewModel,
     innerPadding: PaddingValues
 ) {
 
@@ -75,7 +73,6 @@ fun MainNavHost(
                 when (entry) {
                     Destination.TABLES -> {
                         TablesScreen(
-                            mainViewModel = mainViewModel,
                             modifier = Modifier.padding(bottom = innerPadding.calculateBottomPadding())
                         )
                     }
