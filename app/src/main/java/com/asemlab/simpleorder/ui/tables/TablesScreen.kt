@@ -52,6 +52,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.imageResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
@@ -181,6 +182,8 @@ private fun ProductsSearchBar(
     onSearch: (String) -> Unit
 ) {
     var text by rememberSaveable { mutableStateOf(query) }
+    val keyboardController = LocalSoftwareKeyboardController.current
+
     ProvideTextStyle(value = OrderTitleNormal) {
         SearchBar(
             inputField = {
@@ -199,7 +202,12 @@ private fun ProductsSearchBar(
                         )
                     },
                     leadingIcon = {
-                        IconButton(onClick = { onSearch(text) }) {
+                        IconButton(onClick = {
+                            if (text.isNotEmpty()) {
+                                onSearch(text)
+                                keyboardController?.hide()
+                            }
+                        }, enabled = text.isNotEmpty()) {
                             Icon(Icons.Default.Search, contentDescription = null)
                         }
                     },
@@ -207,12 +215,14 @@ private fun ProductsSearchBar(
                         IconButton(onClick = {
                             text = ""
                             onSearch(text)
-                        }) {
+                            keyboardController?.hide()
+                        }, enabled = text.isNotEmpty()) {
                             Icon(Icons.Default.Close, contentDescription = null)
                         }
                     },
                     onSearch = {
                         onSearch(text)
+                        keyboardController?.hide()
                     },
                     modifier = Modifier
                         .border(
@@ -220,12 +230,15 @@ private fun ProductsSearchBar(
                             color = MaterialTheme.colorScheme.outlineVariant,
                             shape = RoundedCornerShape(size = 8.dp)
                         )
-                        .padding(horizontal = 4.dp).height(56.dp)
+                        .padding(horizontal = 4.dp)
+                        .height(56.dp)
                 )
 
             },
 
-            modifier = Modifier.padding(8.dp).fillMaxWidth(),
+            modifier = Modifier
+                .padding(8.dp)
+                .fillMaxWidth(),
             shape = RoundedCornerShape(size = 8.dp),
             expanded = false,
             onExpandedChange = { }) {
