@@ -12,6 +12,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
+import androidx.compose.ui.unit.dp
 import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
@@ -60,6 +61,7 @@ fun MainBottomBar(navController: NavHostController) {
 fun MainNavHost(
     navController: NavHostController,
     startDestination: Destination,
+    isLandscape: Boolean,
     innerPadding: PaddingValues
 ) {
 
@@ -73,7 +75,10 @@ fun MainNavHost(
                 when (entry) {
                     Destination.TABLES -> {
                         TablesScreen(
-                            modifier = Modifier.padding(bottom = innerPadding.calculateBottomPadding())
+                            modifier = Modifier.padding(
+                                bottom = if (!isLandscape) innerPadding.calculateBottomPadding() else 0.dp,
+                                start = if (isLandscape) 80.dp else 0.dp
+                            )
                         )
                     }
 

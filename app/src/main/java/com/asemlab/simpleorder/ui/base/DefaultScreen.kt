@@ -11,7 +11,6 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import com.asemlab.simpleorder.R
 import com.asemlab.simpleorder.ui.theme.SimpleOrderTheme
-import com.asemlab.simpleorder.ui.theme.Typography
 
 @Composable
 fun DefaultScreen(title: String, modifier: Modifier = Modifier) {
@@ -19,7 +18,7 @@ fun DefaultScreen(title: String, modifier: Modifier = Modifier) {
         Text(
             text = stringResource(R.string.default_screen, title),
             color = MaterialTheme.colorScheme.onPrimaryContainer,
-            style = Typography.titleMedium
+            style = MaterialTheme.typography.titleMedium
         )
     }
 }

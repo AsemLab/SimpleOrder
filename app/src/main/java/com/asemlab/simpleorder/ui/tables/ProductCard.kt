@@ -2,7 +2,6 @@ package com.asemlab.simpleorder.ui.tables
 
 
 import android.annotation.SuppressLint
-import android.content.res.Configuration.UI_MODE_NIGHT_NO
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
@@ -12,9 +11,9 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentHeight
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -22,19 +21,16 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.layout.layoutId
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
-import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.tooling.preview.PreviewLightDark
 import androidx.compose.ui.unit.dp
 import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.constraintlayout.compose.ConstraintSet
 import coil3.compose.AsyncImage
 import com.asemlab.simpleorder.ui.models.ProductUI
-import com.asemlab.simpleorder.ui.theme.OrderBody
-import com.asemlab.simpleorder.ui.theme.OrderTitleBold
+import com.asemlab.simpleorder.ui.theme.ProductTitleBold
 import com.asemlab.simpleorder.ui.theme.SimpleOrderTheme
-import com.asemlab.simpleorder.ui.theme.Typography
 
 
 @SuppressLint("UnusedBoxWithConstraintsScope")
@@ -101,14 +97,14 @@ fun ProductCardBox(
                         minLines = 2,
                         maxLines = 2,
                         overflow = TextOverflow.Ellipsis,
-                        style = OrderTitleBold,
+                        style = ProductTitleBold,
                     )
                     Text(
                         text = "JOD ${price}", maxLines = 1, overflow = TextOverflow.Ellipsis,
                         modifier = Modifier
                             .align(Alignment.End)
                             .padding(top = 4.dp),
-                        style = OrderBody
+                        style = MaterialTheme.typography.titleSmall
                     )
                 }
             }
@@ -116,16 +112,16 @@ fun ProductCardBox(
             if (product.count > 0) {
                 Text(
                     "${product.count}",
-                    style = OrderBody,
+                    style = MaterialTheme.typography.titleSmall,
                     textAlign = TextAlign.Center,
                     color = Color.White,
                     modifier = Modifier
                         .background(
                             color = Color.Red,
-                            shape = RoundedCornerShape(16.dp)
+                            shape = MaterialTheme.shapes.small
                         )
                         .size(32.dp)
-                        .padding(vertical = 8.dp)
+                        .padding(vertical = 6.dp)
                         .layoutId(countId)
                 )
             }
@@ -135,10 +131,7 @@ fun ProductCardBox(
 
 
 @Composable
-@Preview(
-    showBackground = true, /*widthDp = 320,*/ uiMode = UI_MODE_NIGHT_NO,
-    name = "Product Card Preview"
-)
+@PreviewLightDark()
 fun PreviewCard() {
     SimpleOrderTheme {
         ProductCardBox(

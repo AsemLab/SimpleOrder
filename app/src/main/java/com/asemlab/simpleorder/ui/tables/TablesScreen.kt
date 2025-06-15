@@ -2,8 +2,7 @@ package com.asemlab.simpleorder.ui.tables
 
 
 import android.annotation.SuppressLint
-import android.content.res.Configuration.UI_MODE_NIGHT_NO
-import android.content.res.Configuration.UI_MODE_NIGHT_YES
+import android.content.res.Configuration
 import androidx.annotation.DrawableRes
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -18,14 +17,13 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.lazy.grid.rememberLazyGridState
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowForward
 import androidx.compose.material.icons.filled.Close
@@ -39,6 +37,7 @@ import androidx.compose.material3.ProvideTextStyle
 import androidx.compose.material3.SearchBar
 import androidx.compose.material3.SearchBarDefaults
 import androidx.compose.material3.Tab
+import androidx.compose.material3.TabRow
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -52,21 +51,19 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.imageResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
-import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.tooling.preview.PreviewLightDark
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.asemlab.simpleorder.R
 import com.asemlab.simpleorder.ui.base.LoadingIndicator
 import com.asemlab.simpleorder.ui.models.CartState
 import com.asemlab.simpleorder.ui.models.CategoryTabItem
-import com.asemlab.simpleorder.ui.theme.OrderTitleBold
-import com.asemlab.simpleorder.ui.theme.OrderTitleNormal
 import com.asemlab.simpleorder.ui.theme.SimpleOrderTheme
 import kotlinx.coroutines.launch
 import org.koin.androidx.compose.koinViewModel
@@ -83,72 +80,71 @@ fun TablesScreen(
 
     val state = tablesViewModel.state.collectAsStateWithLifecycle()
 
-    SimpleOrderTheme {
-        if (state.value.errorMessage.isNotEmpty()) {
-            NoProducts(state.value.errorMessage, R.drawable.no_product, modifier)
+    if (state.value.errorMessage.isNotEmpty()) {
+        NoProducts(state.value.errorMessage, R.drawable.no_product, modifier)
 
-        } else if (state.value.isLoading && state.value.categories.isEmpty()) {
-            LoadingIndicator(modifier)
-        } else {
-            Column(
-                horizontalAlignment = Alignment.CenterHorizontally,
-                modifier = modifier.fillMaxSize()
-            ) {
+    } else if (state.value.isLoading && state.value.categories.isEmpty()) {
+        LoadingIndicator(modifier)
+    } else {
+        Column(
+            horizontalAlignment = Alignment.CenterHorizontally,
+            modifier = modifier.fillMaxSize()
+        ) {
 
-                if (state.value.categories.isNotEmpty()) {
-                    ProductsSearchBar(state.value.searchQuery) {
-                        tablesViewModel.searchProducts(it)
-                        coroutineScope.launch {
-                            scrollState.animateScrollToItem(0)
-                        }
+            if (state.value.categories.isNotEmpty()) {
+                ProductsSearchBar(state.value.searchQuery) {
+                    tablesViewModel.searchProducts(it)
+                    coroutineScope.launch {
+                        scrollState.animateScrollToItem(0)
                     }
-                    CategoriesTab(
-                        state.value.categories,
-                        (state.value.selectedCategory?.id?.minus(1)) ?: 0
+                }
+                CategoriesTab(
+                    state.value.categories,
+                    (state.value.selectedCategory?.id?.minus(1)) ?: 0
+                ) {
+                    tablesViewModel.filterProductsByCategory(it)
+                    coroutineScope.launch {
+                        scrollState.scrollToItem(0)
+                    }
+                }
+                if (state.value.isLoading) {
+                    LoadingIndicator(modifier)
+                } else if (state.value.products.isNotEmpty()) {
+
+                    Box(
+                        contentAlignment = Alignment.BottomCenter,
+                        modifier = Modifier.fillMaxSize()
                     ) {
-                        tablesViewModel.filterProductsByCategory(it)
-                        coroutineScope.launch {
-                            scrollState.scrollToItem(0)
-                        }
-                    }
-                    if (state.value.isLoading) {
-                        LoadingIndicator(modifier)
-                    } else if (state.value.products.isNotEmpty()) {
-
-                        Box(
-                            contentAlignment = Alignment.BottomCenter,
-                            modifier = Modifier.fillMaxSize()
+                        LazyVerticalGrid(
+                            state = scrollState,
+                            columns = GridCells.Adaptive(175.dp),
+                            modifier = Modifier
+                                .fillMaxSize()
+                                .padding(bottom = if (state.value.cartState.numOfItems > 0) 64.dp else 0.dp)
                         ) {
-                            LazyVerticalGrid(
-                                state = scrollState,
-                                columns = GridCells.Adaptive(175.dp),
-                                modifier = Modifier
-                                    .fillMaxSize()
-                                    .padding(bottom = if (state.value.cartState.numOfItems > 0) 64.dp else 0.dp)
-                            ) {
-                                items(state.value.products) { product ->
-                                    ProductCardBox(product) {
-                                        tablesViewModel.updateCart(product)
-                                    }
-                                }
-                            }
-
-                            if (state.value.cartState.numOfItems > 0) {
-                                CartButton(state.value.cartState) {
-                                    tablesViewModel.clearCart()
+                            items(state.value.products) { product ->
+                                ProductCardBox(product) {
+                                    tablesViewModel.updateCart(product)
                                 }
                             }
                         }
-                    } else {
-                        NoProducts(
-                            stringResource(R.string.no_products),
-                            R.drawable.no_product,
-                            modifier
-                        )
+
+                        if (state.value.cartState.numOfItems > 0) {
+                            CartButton(state.value.cartState) {
+                                tablesViewModel.clearCart()
+                            }
+                        }
                     }
+                } else {
+                    NoProducts(
+                        stringResource(R.string.no_products),
+                        R.drawable.no_product,
+                        modifier
+                    )
                 }
             }
         }
+
     }
 }
 
@@ -184,7 +180,7 @@ private fun ProductsSearchBar(
     var text by rememberSaveable { mutableStateOf(query) }
     val keyboardController = LocalSoftwareKeyboardController.current
 
-    ProvideTextStyle(value = OrderTitleNormal) {
+    ProvideTextStyle(value = MaterialTheme.typography.titleSmall) {
         SearchBar(
             inputField = {
                 SearchBarDefaults.InputField(
@@ -198,7 +194,7 @@ private fun ProductsSearchBar(
                     placeholder = {
                         Text(
                             stringResource(R.string.search_hint),
-                            style = OrderTitleNormal
+                            style = MaterialTheme.typography.titleSmall
                         )
                     },
                     leadingIcon = {
@@ -228,7 +224,7 @@ private fun ProductsSearchBar(
                         .border(
                             width = 1.dp,
                             color = MaterialTheme.colorScheme.outlineVariant,
-                            shape = RoundedCornerShape(size = 8.dp)
+                            shape = MaterialTheme.shapes.medium
                         )
                         .padding(horizontal = 4.dp)
                         .height(56.dp)
@@ -239,7 +235,7 @@ private fun ProductsSearchBar(
             modifier = Modifier
                 .padding(8.dp)
                 .fillMaxWidth(),
-            shape = RoundedCornerShape(size = 8.dp),
+            shape = MaterialTheme.shapes.medium,
             expanded = false,
             onExpandedChange = { }) {
 
@@ -257,12 +253,10 @@ fun CategoriesTab(
 
     val scrollState = rememberScrollState()
     var selected by rememberSaveable { mutableIntStateOf(selectedTab) }
+    val configuration = LocalConfiguration.current
 
-    PrimaryScrollableTabRow(
-        scrollState = scrollState,
-        selectedTabIndex = selected,
-        modifier = Modifier.padding(horizontal = 16.dp), edgePadding = 0.dp
-    ) {
+    @Composable
+    fun addTabs() {
         categories.forEachIndexed { index, category ->
             Tab(
                 selected = selected == index,
@@ -281,6 +275,22 @@ fun CategoriesTab(
             )
         }
     }
+
+    if (configuration.orientation == Configuration.ORIENTATION_PORTRAIT)
+        PrimaryScrollableTabRow(
+            scrollState = scrollState,
+            selectedTabIndex = selected,
+            modifier = Modifier.padding(horizontal = 16.dp), edgePadding = 0.dp
+        ) {
+            addTabs()
+        } else {
+        TabRow(
+            selectedTabIndex = selected,
+            modifier = Modifier.padding(horizontal = 16.dp)
+        ) {
+            addTabs()
+        }
+    }
 }
 
 @Composable
@@ -289,6 +299,7 @@ fun CartButton(cart: CartState, modifier: Modifier = Modifier, onClick: () -> Un
     val format = String.format("JOD %.2f", cart.totalAmount)
 
     Row(
+        horizontalArrangement = Arrangement.SpaceBetween,
         verticalAlignment = Alignment.CenterVertically,
         modifier = modifier
             .fillMaxWidth()
@@ -297,44 +308,43 @@ fun CartButton(cart: CartState, modifier: Modifier = Modifier, onClick: () -> Un
             .padding(bottom = 8.dp)
             .background(
                 color = MaterialTheme.colorScheme.onPrimaryContainer,
-                shape = RoundedCornerShape(8.dp)
+                shape = MaterialTheme.shapes.medium
             )
             .clickable { onClick() }
     ) {
-        Spacer(modifier = modifier.width(16.dp))
+        Spacer(modifier = modifier.width(8.dp))
         Text(
             "${cart.numOfItems}",
-            style = OrderTitleBold,
+            style = MaterialTheme.typography.titleMedium,
             textAlign = TextAlign.Center,
             modifier = Modifier
                 .background(
                     color = MaterialTheme.colorScheme.onPrimary,
-                    shape = CircleShape
+                    shape = MaterialTheme.shapes.small
                 )
-                .fillMaxWidth()
-                .padding(horizontal = 4.dp, vertical = 12.dp)
-                .weight(.1f, true),
+                .weight(.15f, false)
+                .size(36.dp)
+                .padding(vertical = 6.dp, horizontal = 8.dp),
             color = MaterialTheme.colorScheme.onPrimaryContainer
 
         )
-        TextStyle()
         Text(
             stringResource(R.string.view_order),
-            style = OrderTitleBold,
+            style = MaterialTheme.typography.titleMedium,
             textAlign = TextAlign.Start,
             color = MaterialTheme.colorScheme.onPrimary,
             modifier = modifier
-                .padding(8.dp)
-                .weight(.4f),
+                .padding(7.dp)
+                .weight(.35f),
         )
         Text(
             format,
-            style = OrderTitleBold,
+            style = MaterialTheme.typography.titleMedium,
             textAlign = TextAlign.End,
             color = MaterialTheme.colorScheme.onPrimary,
             modifier = modifier
                 .padding(8.dp)
-                .weight(.3f)
+                .weight(.5f)
 
         )
         Icon(
@@ -349,7 +359,7 @@ fun CartButton(cart: CartState, modifier: Modifier = Modifier, onClick: () -> Un
 
 
 @Composable
-@Preview(showBackground = true, uiMode = UI_MODE_NIGHT_NO, name = "NoProducts Preview")
+@PreviewLightDark()
 private fun NoProductsPreview() {
     SimpleOrderTheme {
         NoProducts("No products", R.drawable.no_product)
@@ -357,7 +367,7 @@ private fun NoProductsPreview() {
 }
 
 @Composable
-@Preview(showBackground = true, uiMode = UI_MODE_NIGHT_NO, name = "Cart button Preview")
+@PreviewLightDark()
 private fun CartButtonPreview() {
     SimpleOrderTheme {
         CartButton(CartState(15, 125.33, emptyList())) {
@@ -367,16 +377,7 @@ private fun CartButtonPreview() {
 }
 
 @Composable
-@Preview(showBackground = true, uiMode = UI_MODE_NIGHT_YES, name = "Cart button Dark Preview")
-private fun CartButtonDarkPreview() {
-    SimpleOrderTheme {
-        CartButton(CartState(15, 125.33, emptyList())) {
-        }
-    }
-}
-
-@Composable
-@Preview(showBackground = true, uiMode = UI_MODE_NIGHT_NO, name = "Search bar Preview")
+@PreviewLightDark()
 private fun SearchBarPreview() {
     SimpleOrderTheme {
         ProductsSearchBar("") {
