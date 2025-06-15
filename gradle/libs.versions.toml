@@ -14,7 +14,8 @@ koin_version = "4.0.3"
 coil_version = "3.2.0"
 nav_version = "2.9.0"
 constraintlayout-compose = "1.1.1"
-
+mockk = "1.13.10"
+coroutines_version = "1.10.2"
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
@@ -46,6 +47,8 @@ coil-compose = { module = "io.coil-kt.coil3:coil-compose", version.ref = "coil_v
 coil-network = { module = "io.coil-kt.coil3:coil-network-ktor3", version.ref = "coil_version" }
 navigation-compose = { module = "androidx.navigation:navigation-compose", version.ref = "nav_version" }
 constraintlayout-compose = { group = "androidx.constraintlayout", name = "constraintlayout-compose", version.ref = "constraintlayout-compose" }
+mockk = { module = "io.mockk:mockk", version.ref = "mockk" }
+coroutines-test = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-test", version.ref = "coroutines_version" }
 
 
 [plugins]
