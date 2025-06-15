@@ -2,8 +2,6 @@ package com.asemlab.simpleorder.ui.tables
 
 
 import android.annotation.SuppressLint
-import android.content.res.Configuration.UI_MODE_NIGHT_NO
-import android.content.res.Configuration.UI_MODE_NIGHT_YES
 import androidx.annotation.DrawableRes
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -18,14 +16,13 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.lazy.grid.rememberLazyGridState
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowForward
 import androidx.compose.material.icons.filled.Close
@@ -55,18 +52,15 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.imageResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
-import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.tooling.preview.PreviewLightDark
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.asemlab.simpleorder.R
 import com.asemlab.simpleorder.ui.base.LoadingIndicator
 import com.asemlab.simpleorder.ui.models.CartState
 import com.asemlab.simpleorder.ui.models.CategoryTabItem
-import com.asemlab.simpleorder.ui.theme.OrderTitleBold
-import com.asemlab.simpleorder.ui.theme.OrderTitleNormal
 import com.asemlab.simpleorder.ui.theme.SimpleOrderTheme
 import kotlinx.coroutines.launch
 import org.koin.androidx.compose.koinViewModel
@@ -184,7 +178,7 @@ private fun ProductsSearchBar(
     var text by rememberSaveable { mutableStateOf(query) }
     val keyboardController = LocalSoftwareKeyboardController.current
 
-    ProvideTextStyle(value = OrderTitleNormal) {
+    ProvideTextStyle(value = MaterialTheme.typography.titleSmall) {
         SearchBar(
             inputField = {
                 SearchBarDefaults.InputField(
@@ -198,7 +192,7 @@ private fun ProductsSearchBar(
                     placeholder = {
                         Text(
                             stringResource(R.string.search_hint),
-                            style = OrderTitleNormal
+                            style = MaterialTheme.typography.titleSmall
                         )
                     },
                     leadingIcon = {
@@ -228,7 +222,7 @@ private fun ProductsSearchBar(
                         .border(
                             width = 1.dp,
                             color = MaterialTheme.colorScheme.outlineVariant,
-                            shape = RoundedCornerShape(size = 8.dp)
+                            shape = MaterialTheme.shapes.medium
                         )
                         .padding(horizontal = 4.dp)
                         .height(56.dp)
@@ -239,7 +233,7 @@ private fun ProductsSearchBar(
             modifier = Modifier
                 .padding(8.dp)
                 .fillMaxWidth(),
-            shape = RoundedCornerShape(size = 8.dp),
+            shape = MaterialTheme.shapes.medium,
             expanded = false,
             onExpandedChange = { }) {
 
@@ -289,6 +283,7 @@ fun CartButton(cart: CartState, modifier: Modifier = Modifier, onClick: () -> Un
     val format = String.format("JOD %.2f", cart.totalAmount)
 
     Row(
+        horizontalArrangement = Arrangement.SpaceBetween,
         verticalAlignment = Alignment.CenterVertically,
         modifier = modifier
             .fillMaxWidth()
@@ -297,44 +292,43 @@ fun CartButton(cart: CartState, modifier: Modifier = Modifier, onClick: () -> Un
             .padding(bottom = 8.dp)
             .background(
                 color = MaterialTheme.colorScheme.onPrimaryContainer,
-                shape = RoundedCornerShape(8.dp)
+                shape = MaterialTheme.shapes.medium
             )
             .clickable { onClick() }
     ) {
-        Spacer(modifier = modifier.width(16.dp))
+        Spacer(modifier = modifier.width(8.dp))
         Text(
             "${cart.numOfItems}",
-            style = OrderTitleBold,
+            style = MaterialTheme.typography.titleMedium,
             textAlign = TextAlign.Center,
             modifier = Modifier
                 .background(
                     color = MaterialTheme.colorScheme.onPrimary,
-                    shape = CircleShape
+                    shape = MaterialTheme.shapes.small
                 )
-                .fillMaxWidth()
-                .padding(horizontal = 4.dp, vertical = 12.dp)
-                .weight(.1f, true),
+                .weight(.15f, false)
+                .size(36.dp)
+                .padding(vertical = 6.dp, horizontal = 8.dp),
             color = MaterialTheme.colorScheme.onPrimaryContainer
 
         )
-        TextStyle()
         Text(
             stringResource(R.string.view_order),
-            style = OrderTitleBold,
+            style = MaterialTheme.typography.titleMedium,
             textAlign = TextAlign.Start,
             color = MaterialTheme.colorScheme.onPrimary,
             modifier = modifier
-                .padding(8.dp)
-                .weight(.4f),
+                .padding(7.dp)
+                .weight(.35f),
         )
         Text(
             format,
-            style = OrderTitleBold,
+            style = MaterialTheme.typography.titleMedium,
             textAlign = TextAlign.End,
             color = MaterialTheme.colorScheme.onPrimary,
             modifier = modifier
                 .padding(8.dp)
-                .weight(.3f)
+                .weight(.5f)
 
         )
         Icon(
@@ -349,7 +343,7 @@ fun CartButton(cart: CartState, modifier: Modifier = Modifier, onClick: () -> Un
 
 
 @Composable
-@Preview(showBackground = true, uiMode = UI_MODE_NIGHT_NO, name = "NoProducts Preview")
+@PreviewLightDark()
 private fun NoProductsPreview() {
     SimpleOrderTheme {
         NoProducts("No products", R.drawable.no_product)
@@ -357,7 +351,7 @@ private fun NoProductsPreview() {
 }
 
 @Composable
-@Preview(showBackground = true, uiMode = UI_MODE_NIGHT_NO, name = "Cart button Preview")
+@PreviewLightDark()
 private fun CartButtonPreview() {
     SimpleOrderTheme {
         CartButton(CartState(15, 125.33, emptyList())) {
@@ -367,16 +361,7 @@ private fun CartButtonPreview() {
 }
 
 @Composable
-@Preview(showBackground = true, uiMode = UI_MODE_NIGHT_YES, name = "Cart button Dark Preview")
-private fun CartButtonDarkPreview() {
-    SimpleOrderTheme {
-        CartButton(CartState(15, 125.33, emptyList())) {
-        }
-    }
-}
-
-@Composable
-@Preview(showBackground = true, uiMode = UI_MODE_NIGHT_NO, name = "Search bar Preview")
+@PreviewLightDark()
 private fun SearchBarPreview() {
     SimpleOrderTheme {
         ProductsSearchBar("") {
