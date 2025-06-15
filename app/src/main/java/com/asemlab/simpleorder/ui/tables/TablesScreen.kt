@@ -2,6 +2,7 @@ package com.asemlab.simpleorder.ui.tables
 
 
 import android.annotation.SuppressLint
+import android.content.res.Configuration
 import androidx.annotation.DrawableRes
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -36,6 +37,7 @@ import androidx.compose.material3.ProvideTextStyle
 import androidx.compose.material3.SearchBar
 import androidx.compose.material3.SearchBarDefaults
 import androidx.compose.material3.Tab
+import androidx.compose.material3.TabRow
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -49,6 +51,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.imageResource
 import androidx.compose.ui.res.stringResource
@@ -77,72 +80,71 @@ fun TablesScreen(
 
     val state = tablesViewModel.state.collectAsStateWithLifecycle()
 
-    SimpleOrderTheme {
-        if (state.value.errorMessage.isNotEmpty()) {
-            NoProducts(state.value.errorMessage, R.drawable.no_product, modifier)
+    if (state.value.errorMessage.isNotEmpty()) {
+        NoProducts(state.value.errorMessage, R.drawable.no_product, modifier)
 
-        } else if (state.value.isLoading && state.value.categories.isEmpty()) {
-            LoadingIndicator(modifier)
-        } else {
-            Column(
-                horizontalAlignment = Alignment.CenterHorizontally,
-                modifier = modifier.fillMaxSize()
-            ) {
+    } else if (state.value.isLoading && state.value.categories.isEmpty()) {
+        LoadingIndicator(modifier)
+    } else {
+        Column(
+            horizontalAlignment = Alignment.CenterHorizontally,
+            modifier = modifier.fillMaxSize()
+        ) {
 
-                if (state.value.categories.isNotEmpty()) {
-                    ProductsSearchBar(state.value.searchQuery) {
-                        tablesViewModel.searchProducts(it)
-                        coroutineScope.launch {
-                            scrollState.animateScrollToItem(0)
-                        }
+            if (state.value.categories.isNotEmpty()) {
+                ProductsSearchBar(state.value.searchQuery) {
+                    tablesViewModel.searchProducts(it)
+                    coroutineScope.launch {
+                        scrollState.animateScrollToItem(0)
                     }
-                    CategoriesTab(
-                        state.value.categories,
-                        (state.value.selectedCategory?.id?.minus(1)) ?: 0
+                }
+                CategoriesTab(
+                    state.value.categories,
+                    (state.value.selectedCategory?.id?.minus(1)) ?: 0
+                ) {
+                    tablesViewModel.filterProductsByCategory(it)
+                    coroutineScope.launch {
+                        scrollState.scrollToItem(0)
+                    }
+                }
+                if (state.value.isLoading) {
+                    LoadingIndicator(modifier)
+                } else if (state.value.products.isNotEmpty()) {
+
+                    Box(
+                        contentAlignment = Alignment.BottomCenter,
+                        modifier = Modifier.fillMaxSize()
                     ) {
-                        tablesViewModel.filterProductsByCategory(it)
-                        coroutineScope.launch {
-                            scrollState.scrollToItem(0)
-                        }
-                    }
-                    if (state.value.isLoading) {
-                        LoadingIndicator(modifier)
-                    } else if (state.value.products.isNotEmpty()) {
-
-                        Box(
-                            contentAlignment = Alignment.BottomCenter,
-                            modifier = Modifier.fillMaxSize()
+                        LazyVerticalGrid(
+                            state = scrollState,
+                            columns = GridCells.Adaptive(175.dp),
+                            modifier = Modifier
+                                .fillMaxSize()
+                                .padding(bottom = if (state.value.cartState.numOfItems > 0) 64.dp else 0.dp)
                         ) {
-                            LazyVerticalGrid(
-                                state = scrollState,
-                                columns = GridCells.Adaptive(175.dp),
-                                modifier = Modifier
-                                    .fillMaxSize()
-                                    .padding(bottom = if (state.value.cartState.numOfItems > 0) 64.dp else 0.dp)
-                            ) {
-                                items(state.value.products) { product ->
-                                    ProductCardBox(product) {
-                                        tablesViewModel.updateCart(product)
-                                    }
-                                }
-                            }
-
-                            if (state.value.cartState.numOfItems > 0) {
-                                CartButton(state.value.cartState) {
-                                    tablesViewModel.clearCart()
+                            items(state.value.products) { product ->
+                                ProductCardBox(product) {
+                                    tablesViewModel.updateCart(product)
                                 }
                             }
                         }
-                    } else {
-                        NoProducts(
-                            stringResource(R.string.no_products),
-                            R.drawable.no_product,
-                            modifier
-                        )
+
+                        if (state.value.cartState.numOfItems > 0) {
+                            CartButton(state.value.cartState) {
+                                tablesViewModel.clearCart()
+                            }
+                        }
                     }
+                } else {
+                    NoProducts(
+                        stringResource(R.string.no_products),
+                        R.drawable.no_product,
+                        modifier
+                    )
                 }
             }
         }
+
     }
 }
 
@@ -251,12 +253,10 @@ fun CategoriesTab(
 
     val scrollState = rememberScrollState()
     var selected by rememberSaveable { mutableIntStateOf(selectedTab) }
+    val configuration = LocalConfiguration.current
 
-    PrimaryScrollableTabRow(
-        scrollState = scrollState,
-        selectedTabIndex = selected,
-        modifier = Modifier.padding(horizontal = 16.dp), edgePadding = 0.dp
-    ) {
+    @Composable
+    fun addTabs() {
         categories.forEachIndexed { index, category ->
             Tab(
                 selected = selected == index,
@@ -273,6 +273,22 @@ fun CategoriesTab(
                     )
                 }
             )
+        }
+    }
+
+    if (configuration.orientation == Configuration.ORIENTATION_PORTRAIT)
+        PrimaryScrollableTabRow(
+            scrollState = scrollState,
+            selectedTabIndex = selected,
+            modifier = Modifier.padding(horizontal = 16.dp), edgePadding = 0.dp
+        ) {
+            addTabs()
+        } else {
+        TabRow(
+            selectedTabIndex = selected,
+            modifier = Modifier.padding(horizontal = 16.dp)
+        ) {
+            addTabs()
         }
     }
 }

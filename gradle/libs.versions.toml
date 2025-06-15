@@ -17,6 +17,7 @@ constraintlayout-compose = "1.1.1"
 mockk = "1.13.10"
 coroutines_version = "1.10.2"
 google_fonts = "1.8.2"
+androidx_window = "1.4.0"
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
@@ -51,6 +52,8 @@ constraintlayout-compose = { group = "androidx.constraintlayout", name = "constr
 mockk = { module = "io.mockk:mockk", version.ref = "mockk" }
 coroutines-test = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-test", version.ref = "coroutines_version" }
 google-fonts = { module = "androidx.compose.ui:ui-text-google-fonts", version.ref = "google_fonts" }
+androidx-window = { module = "androidx.window:window", version.ref = "androidx_window" }
+androidx-window-core = { module = "androidx.window:window-core", version.ref = "androidx_window" }
 
 
 [plugins]
