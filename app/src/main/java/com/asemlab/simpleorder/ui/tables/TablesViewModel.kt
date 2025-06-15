@@ -4,7 +4,6 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.asemlab.simpleorder.models.onError
 import com.asemlab.simpleorder.models.onSuccess
-import com.asemlab.simpleorder.repositories.ProductsRepository
 import com.asemlab.simpleorder.ui.models.CartState
 import com.asemlab.simpleorder.ui.models.CategoryTabItem
 import com.asemlab.simpleorder.ui.models.ProductUI
@@ -14,6 +13,8 @@ import com.asemlab.simpleorder.ui.models.toCategory
 import com.asemlab.simpleorder.ui.models.toCategoryTabItem
 import com.asemlab.simpleorder.ui.models.toProductUI
 import com.asemlab.simpleorder.ui.models.updateProductQuantity
+import com.asemlab.simpleorder.usecases.categories.CategoriesManager
+import com.asemlab.simpleorder.usecases.products.ProductsManager
 import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
@@ -22,7 +23,10 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
-class TablesViewModel(private val repository: ProductsRepository) : ViewModel() {
+class TablesViewModel(
+    private val categoriesManager: CategoriesManager,
+    private val productsManager: ProductsManager
+) : ViewModel() {
 
 
     val state = MutableStateFlow(TablesState(cartState = CartState(items = emptyList())))
@@ -36,7 +40,7 @@ class TablesViewModel(private val repository: ProductsRepository) : ViewModel() 
 
     fun getCategories() {
         launchCoroutine {
-            repository.getCategories()
+            categoriesManager.getCategories()
                 .onSuccess { categoryList ->
                     categories.update { categoryList.map { it.toCategoryTabItem() } }
                     getProducts()
@@ -55,7 +59,7 @@ class TablesViewModel(private val repository: ProductsRepository) : ViewModel() 
 
     fun getProducts() {
         launchCoroutine {
-            repository.getProducts()
+            productsManager.getProducts()
                 .onSuccess { productList ->
 
                     products.update { productList.map { it.toProductUI() } }
@@ -82,7 +86,7 @@ class TablesViewModel(private val repository: ProductsRepository) : ViewModel() 
                     categories = categories.value,
                     errorMessage = "",
                     products =
-                        repository.getProductsByCategory(category.toCategory())
+                        productsManager.getProductsByCategory(category.toCategory())
                             .map { it.toProductUI() },
                     selectedCategory = category
                 )
